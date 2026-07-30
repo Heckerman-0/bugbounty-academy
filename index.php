@@ -24,13 +24,26 @@
         </div>
     </div>
 
+    <!-- 🔥 NOW ALL CARDS ARE CLICKABLE LINKS -->
     <div class="feature-grid">
-        <div class="feature-item"><span class="icon">📚</span> Theory Lessons</div>
-        <div class="feature-item"><span class="icon">💻</span> Live Vulnerable Labs</div>
-        <div class="feature-item"><span class="icon">🧠</span> Quizzes & Challenges</div>
-        <div class="feature-item"><span class="icon">🏅</span> Badges & Streaks</div>
-        <div class="feature-item"><span class="icon">📝</span> Community Writeups</div>
-        <div class="feature-item"><span class="icon">🛠️</span> Tool Simulators</div>
+        <a href="dashboard.php" style="text-decoration:none; border-bottom:none;">
+            <div class="feature-item"><span class="icon">📚</span> Theory Lessons</div>
+        </a>
+        <a href="dashboard.php" style="text-decoration:none; border-bottom:none;">
+            <div class="feature-item"><span class="icon">💻</span> Live Vulnerable Labs</div>
+        </a>
+        <a href="dashboard.php" style="text-decoration:none; border-bottom:none;">
+            <div class="feature-item"><span class="icon">🧠</span> Quizzes & Challenges</div>
+        </a>
+        <a href="dashboard.php" style="text-decoration:none; border-bottom:none;">
+            <div class="feature-item"><span class="icon">🏅</span> Badges & Streaks</div>
+        </a>
+        <a href="dashboard.php" style="text-decoration:none; border-bottom:none;">
+            <div class="feature-item"><span class="icon">📝</span> Community Writeups</div>
+        </a>
+        <a href="dashboard.php" style="text-decoration:none; border-bottom:none;">
+            <div class="feature-item"><span class="icon">🛠️</span> Tool Simulators</div>
+        </a>
     </div>
 
     <div style="text-align:center; margin-top:30px; color:#666;">
