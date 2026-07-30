@@ -31,10 +31,36 @@ function loginUser($username, $password) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
+        $_SESSION['email'] = $user['email'];
         updateStreak($user['id']);
         return true;
     }
     return false;
+}
+
+function changeEmail($user_id, $new_email) {
+    global $pdo;
+    try {
+        $stmt = $pdo->prepare("UPDATE users SET email = ? WHERE id = ?");
+        $stmt->execute([$new_email, $user_id]);
+        return true;
+    } catch(PDOException $e) {
+        return "Email already in use or invalid.";
+    }
+}
+
+function changePassword($user_id, $old_password, $new_password) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT password_hash FROM users WHERE id = ?");
+    $stmt->execute([$user_id]);
+    $user = $stmt->fetch();
+    if (!$user || !password_verify($old_password, $user['password_hash'])) {
+        return "Current password is incorrect.";
+    }
+    $new_hash = password_hash($new_password, PASSWORD_DEFAULT);
+    $upd = $pdo->prepare("UPDATE users SET password_hash = ? WHERE id = ?");
+    $upd->execute([$new_hash, $user_id]);
+    return true;
 }
 
 function logoutUser() {

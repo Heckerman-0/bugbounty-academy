@@ -1,45 +1,82 @@
 ﻿/* ========================================
-   CYBER PUNK / HACKER ACADEMY THEME
-   Energetic, Dark, Neon Glows
+   ULTIMATE CYBER PUNK THEME v2.0
+   Glassmorphism + Floating Particles
    ======================================== */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: 'Inter', sans-serif;
-    background: #0b0b1a;
+    background: #0a0a1a;
     color: #e0e0ff;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    background-image: radial-gradient(circle at 10% 20%, rgba(0, 242, 254, 0.03) 0%, transparent 50%),
-                      radial-gradient(circle at 90% 80%, rgba(254, 0, 254, 0.03) 0%, transparent 50%);
+    position: relative;
+    overflow-x: hidden;
 }
 
-/* ---- Main Container (Glassmorphism) ---- */
+/* ---- CYBER PARTICLE BACKGROUND (Pure CSS) ---- */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #00f2fe, transparent),
+        radial-gradient(2px 2px at 40px 70px, #fe00fe, transparent),
+        radial-gradient(2px 2px at 50px 160px, #00f2fe, transparent),
+        radial-gradient(2px 2px at 90px 40px, #fe00fe, transparent),
+        radial-gradient(3px 3px at 130px 80px, #00f2fe, transparent),
+        radial-gradient(2px 2px at 160px 30px, #fe00fe, transparent);
+    background-size: 200px 200px;
+    background-repeat: repeat;
+    opacity: 0.15;
+    animation: driftParticles 60s linear infinite;
+}
+@keyframes driftParticles {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-50px, -50px) rotate(5deg); }
+}
+/* Additional floating glow orbs */
+body::after {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    z-index: -2;
+    background: radial-gradient(circle at 30% 40%, rgba(0, 242, 254, 0.03) 0%, transparent 60%),
+                radial-gradient(circle at 70% 60%, rgba(254, 0, 254, 0.03) 0%, transparent 60%);
+    animation: orbFloat 20s ease-in-out infinite alternate;
+}
+@keyframes orbFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-5%, 5%) scale(1.1); }
+}
+
+/* ---- MAIN CONTAINER (Glass) ---- */
 .container {
     max-width: 1100px;
     width: 100%;
     margin: 0 auto;
-    background: rgba(20, 20, 40, 0.65);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(0, 242, 254, 0.15);
-    border-radius: 24px;
-    padding: 40px 50px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 242, 254, 0.05);
-    transition: all 0.3s ease;
+    background: rgba(12, 12, 30, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 242, 254, 0.12);
+    border-radius: 28px;
+    padding: 30px 40px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 60px rgba(0, 242, 254, 0.03);
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 1;
 }
 
-/* ---- Typography with Gradients ---- */
+/* ---- TYPOGRAPHY (Neon Gradients) ---- */
 h1, h2, h3 {
     font-weight: 800;
     background: linear-gradient(135deg, #00f2fe 0%, #fe00fe 100%);
@@ -48,16 +85,11 @@ h1, h2, h3 {
     background-clip: text;
     letter-spacing: -0.02em;
 }
-
 h1 { font-size: 3.2rem; margin-bottom: 0.5rem; }
 h2 { font-size: 2.2rem; margin-top: 1.5rem; margin-bottom: 1rem; }
 h3 { font-size: 1.5rem; margin-top: 1.2rem; margin-bottom: 0.6rem; }
 
-p, li {
-    line-height: 1.7;
-    color: #c8c8f0;
-    font-weight: 400;
-}
+p, li { line-height: 1.7; color: #c8c8f0; font-weight: 400; }
 
 a {
     color: #00f2fe;
@@ -66,12 +98,9 @@ a {
     transition: all 0.2s ease;
     border-bottom: 2px solid transparent;
 }
-a:hover {
-    color: #fe00fe;
-    border-bottom-color: #fe00fe;
-}
+a:hover { color: #fe00fe; border-bottom-color: #fe00fe; }
 
-/* ---- Glowing Buttons ---- */
+/* ---- BUTTONS ---- */
 button, .btn {
     background: linear-gradient(135deg, #00f2fe, #4a00e0);
     border: none;
@@ -83,23 +112,23 @@ button, .btn {
     border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
-    box-shadow: 0 4px 20px rgba(0, 242, 254, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 242, 254, 0.25);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 button:hover, .btn:hover {
     transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 242, 254, 0.5);
+    box-shadow: 0 8px 35px rgba(0, 242, 254, 0.5);
     background: linear-gradient(135deg, #fe00fe, #4a00e0);
 }
 
-/* ---- Inputs (Cyber) ---- */
+/* ---- INPUTS ---- */
 input, textarea, select {
     width: 100%;
     padding: 14px 18px;
     margin: 8px 0 16px 0;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(0, 242, 254, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 242, 254, 0.15);
     border-radius: 12px;
     color: #fff;
     font-size: 1rem;
@@ -109,13 +138,13 @@ input, textarea, select {
 input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: #00f2fe;
-    box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
-    background: rgba(0, 242, 254, 0.05);
+    box-shadow: 0 0 25px rgba(0, 242, 254, 0.1);
+    background: rgba(0, 242, 254, 0.03);
 }
 
-/* ---- Cards / Boxes ---- */
+/* ---- CARDS / BOXES ---- */
 .highlight-box, .call-to-action {
-    background: rgba(0, 242, 254, 0.08);
+    background: rgba(0, 242, 254, 0.06);
     border-left: 4px solid #00f2fe;
     padding: 20px 28px;
     border-radius: 12px;
@@ -123,12 +152,12 @@ input:focus, textarea:focus, select:focus {
     backdrop-filter: blur(4px);
 }
 .call-to-action {
-    background: rgba(254, 0, 254, 0.08);
+    background: rgba(254, 0, 254, 0.06);
     border-left-color: #fe00fe;
     text-align: center;
 }
 
-/* ---- Code Blocks ---- */
+/* ---- CODE ---- */
 pre, code {
     background: #0d0d1f;
     padding: 4px 10px;
@@ -137,58 +166,27 @@ pre, code {
     color: #00f2fe;
     border: 1px solid rgba(0, 242, 254, 0.1);
 }
-pre {
-    padding: 20px;
-    overflow-x: auto;
-    margin: 15px 0;
-}
+pre { padding: 20px; overflow-x: auto; margin: 15px 0; }
 
-/* ---- Badges / Tags ---- */
-.badge {
-    background: linear-gradient(135deg, #00f2fe, #4a00e0);
-    padding: 4px 14px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #fff;
-    display: inline-block;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-.duration {
-    color: #a0a0c0;
-    font-size: 0.9rem;
-    margin-left: 15px;
-}
-
-/* ---- Lesson Specific Layout ---- */
-.lesson-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding-bottom: 15px;
-}
-
-/* ---- Dashboard Grid Cards ---- */
+/* ---- STATS GRID ---- */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 20px;
     margin: 25px 0;
 }
 .stat-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(0, 242, 254, 0.1);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(0, 242, 254, 0.08);
     border-radius: 16px;
-    padding: 20px;
+    padding: 20px 10px;
     text-align: center;
     transition: all 0.3s ease;
 }
 .stat-card:hover {
     transform: translateY(-5px);
     border-color: #00f2fe;
-    box-shadow: 0 10px 30px rgba(0, 242, 254, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 .stat-number {
     font-size: 2.5rem;
@@ -197,14 +195,9 @@ pre {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
-.stat-label {
-    color: #8888aa;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+.stat-label { color: #8888aa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 
-/* ---- Module List (Dashboard) ---- */
+/* ---- MODULE LIST ---- */
 .module-list {
     list-style: none;
     padding: 0;
@@ -221,26 +214,51 @@ pre {
     align-items: center;
 }
 .module-list li:hover {
-    background: rgba(0, 242, 254, 0.05);
-    border-color: rgba(0, 242, 254, 0.3);
+    background: rgba(0, 242, 254, 0.04);
+    border-color: rgba(0, 242, 254, 0.2);
 }
-.module-list .checkmark {
-    color: #00f2fe;
-    font-size: 1.4rem;
-}
+.module-list .checkmark { color: #00f2fe; font-size: 1.4rem; }
 
-/* ---- Footer / Nav ---- */
-.nav-links {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    display: flex;
+/* ---- HERO (Landing) ---- */
+.hero { text-align: center; padding: 30px 0 10px 0; }
+.hero h1 {
+    font-size: 4.5rem;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #00f2fe, #fe00fe, #00f2fe);
+    background-size: 200% 200%;
+    animation: gradientMove 4s ease infinite;
+}
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.hero p { font-size: 1.3rem; color: #a0a0d0; max-width: 600px; margin: 20px auto; }
+.cta-buttons { margin-top: 30px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 20px;
-    flex-wrap: wrap;
+    margin-top: 40px;
 }
+.feature-item {
+    background: rgba(255,255,255,0.02);
+    padding: 25px 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: 0.3s;
+    text-align: center;
+}
+.feature-item:hover { border-color: #00f2fe; transform: scale(1.03); }
+.feature-item .icon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
 
-/* ---- Responsive ---- */
+/* ---- NAV (moved to nav.php include, but styles here for safety) ---- */
+.cyber-nav { /* defined in nav.php style block */ }
+
+/* ---- RESPONSIVE ---- */
 @media (max-width: 700px) {
     .container { padding: 20px; }
     h1 { font-size: 2.2rem; }
+    .hero h1 { font-size: 2.8rem; }
 }
