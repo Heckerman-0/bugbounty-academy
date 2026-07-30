@@ -1,0 +1,11 @@
+﻿# Ignore config (contains DB passwords)
+includes/config.php
+.env
+*.env
+
+# OS junk
+.DS_Store
+Thumbs.db
+*.log
+sessions/
+uploads/

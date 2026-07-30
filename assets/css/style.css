@@ -1,0 +1,6 @@
+﻿body { font-family: Arial, sans-serif; background: #1e1e2e; color: #cdd6f4; padding: 20px; }
+.container { max-width: 800px; margin: auto; background: #313244; padding: 20px; border-radius: 10px; }
+input, textarea, select { width: 100%; padding: 8px; margin: 5px 0; background: #45475a; border: none; color: white; }
+button { background: #89b4fa; color: #111; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+a { color: #89b4fa; text-decoration: none; }
+fieldset { border: 1px solid #45475a; margin: 10px 0; }
