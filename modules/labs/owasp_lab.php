@@ -52,41 +52,83 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html><head><link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css"></head>
-<body><div class="container">
-<?php include '../../includes/nav.php'; ?>
-<h1>🛡️ OWASP Top 10 Challenge Lab</h1>
-<p>Identify which <strong>OWASP Top 10</strong> category each vulnerability scenario belongs to. Answer all 4 correctly, then submit the flag.</p>
+<html>
+<head>
+    <title>CyberCert | Security Training</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>includes/lab.css">
+    <style>
+        :root { --accent: #16a34a; --accent2: #166534; }
+        .quiz-card { border:1px solid var(--border); border-radius:14px; padding:20px; margin:14px 0; background:#fafafa; }
+        .quiz-card h4 { margin:0 0 12px; }
+        .quiz-card select { background:#fff; }
+        .quiz-card .correct { color:var(--ok); font-weight:700; margin-top:10px; }
+        .progress { display:flex; gap:8px; margin-bottom:16px; }
+        .progress .step { flex:1; height:8px; border-radius:20px; background:#e5e7eb; }
+        .progress .step.on { background: linear-gradient(90deg,#16a34a,#166534); }
+    </style>
+</head>
+<body>
+<div class="lab-banner">
+    <div><span class="brand">🛡️ BBA</span> Lab — OWASP Top 10</div>
+    <div><a class="link" href="<?= BASE_URL ?>modules/labs/index.php">⬅ Back to Labs</a></div>
+</div>
 
-<?php foreach ($scenarios as $num => $scen): ?>
-    <div style="border:1px solid rgba(255,255,255,0.1); padding:15px; border-radius:10px; margin:15px 0;">
-        <p><strong>Scenario <?= $num ?>:</strong> <?= htmlspecialchars($scen['desc']) ?></p>
-        <form method="POST" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-            <?= csrfField() ?>
-            <input type="hidden" name="scenario" value="<?= $num ?>">
-            <select name="category" style="padding:8px; border-radius:6px; border:1px solid #444;">
-                <option value="">Select category...</option>
-                <option value="Injection">Injection</option>
-                <option value="Broken Access Control">Broken Access Control</option>
-                <option value="Security Misconfiguration">Security Misconfiguration</option>
-                <option value="XSS">Cross-Site Scripting (XSS)</option>
-            </select>
-            <button type="submit" style="padding:8px 16px;">Check</button>
-        </form>
-        <?php if ($answered === $num): ?>
-            <p style="color:green; margin-top:8px;">✅ Correct category: <strong><?= htmlspecialchars($correct_category) ?></strong></p>
-        <?php endif; ?>
+<header class="site-header">
+    <div class="inner">
+        <div class="logo">🎓 CyberCert <span>Security Training</span></div>
+        <nav>
+            <a href="#">Courses</a>
+            <a href="#">Quiz</a>
+            <a href="#">Certificate</a>
+        </nav>
     </div>
-<?php endforeach; ?>
+</header>
 
-<div style="border:1px solid #ccc; padding:10px; margin-top:10px;"><?= $msg ?></div>
+<main class="site-main">
+    <div class="site-card">
+        <h1>OWASP Top 10 Assessment</h1>
+        <p class="sub">Identify which security category each vulnerability scenario belongs to.</p>
 
-<form method="POST">
-    <?= csrfField() ?>
-    <h3>Completed all scenarios? Submit the flag:</h3>
-    <input type="text" name="flag" placeholder="Enter flag">
-    <button type="submit">Submit Flag</button>
-</form>
-<?php if ($flag_correct): ?><h2 style="color:green;">✅ Lab Passed!</h2><?php endif; ?>
-<a href="<?= BASE_URL ?>modules/labs/index.php" style="display:inline-block; margin-top:15px;">Back to Labs</a>
-</div></body></html>
+        <div class="progress">
+            <?php for ($i=1; $i<=4; $i++): ?>
+                <div class="step <?= ($answered !== null && $i <= $answered) ? 'on' : '' ?>"></div>
+            <?php endfor; ?>
+        </div>
+
+        <?php foreach ($scenarios as $num => $scen): ?>
+            <div class="quiz-card">
+                <h4>Scenario <?= $num ?></h4>
+                <p style="color:var(--muted); margin:0 0 12px;"><?= htmlspecialchars($scen['desc']) ?></p>
+                <form method="POST" class="site-form">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="scenario" value="<?= $num ?>">
+                    <select name="category">
+                        <option value="">Select category...</option>
+                        <option value="Injection">Injection</option>
+                        <option value="Broken Access Control">Broken Access Control</option>
+                        <option value="Security Misconfiguration">Security Misconfiguration</option>
+                        <option value="XSS">Cross-Site Scripting (XSS)</option>
+                    </select>
+                    <button type="submit" class="btn-site">Check Answer</button>
+                </form>
+                <?php if ($answered === $num): ?>
+                    <div class="correct">✅ Correct category: <strong><?= htmlspecialchars($correct_category) ?></strong></div>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+
+        <?php if ($msg): ?><div class="alert <?= (stripos($msg,'Correct')!==false || stripos($msg,'CORRECT')!==false) ? 'ok' : 'warn' ?>" style="margin-top:16px;"><?= $msg ?></div><?php endif; ?>
+    </div>
+
+    <div class="flag-box">
+        <h3>🏴 Completed all scenarios? Submit the flag:</h3>
+        <form method="POST" class="site-form">
+            <?= csrfField() ?>
+            <input type="text" name="flag" placeholder="Enter flag">
+            <button type="submit" class="btn-site">Submit Flag</button>
+        </form>
+        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+    </div>
+</main>
+</body>
+</html>

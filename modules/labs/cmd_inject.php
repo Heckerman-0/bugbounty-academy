@@ -33,25 +33,64 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
 }
 ?>
 <!DOCTYPE html>
-<html><head><link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css"></head>
-<body><div class="container">
-<h1>Command Injection Lab</h1>
-<p>Ping a host below. Hint: The app passes your input directly to the shell — try appending a command with <code>;</code> or <code>&&</code>.</p>
-<form method="GET">
-    <input type="text" name="ip" placeholder="127.0.0.1">
-    <button type="submit">Ping</button>
-</form>
-<?php if ($output): ?>
-<div style="border:1px solid #ccc; padding:10px;"><pre><?= htmlspecialchars($output) ?></pre></div>
-<?php endif; ?>
-<div style="border:1px solid #ccc; padding:10px; margin-top:10px;"><?= $msg ?></div>
+<html>
+<head>
+    <title>PingGrid | Network Monitor</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>includes/lab.css">
+    <style>
+        :root { --accent: #0891b2; --accent2: #164e63; }
+        .status-dot { display:inline-block; width:10px; height:10px; border-radius:50%; background:#22c55e; margin-right:8px; }
+    </style>
+</head>
+<body>
+<div class="lab-banner">
+    <div><span class="brand">🛡️ BBA</span> Lab — Command Injection</div>
+    <div><a class="link" href="<?= BASE_URL ?>modules/labs/index.php">⬅ Back to Labs</a></div>
+</div>
 
-<form method="POST">
-    <?= csrfField() ?>
-    <h3>Found the flag? Submit it:</h3>
-    <input type="text" name="flag" placeholder="Enter flag">
-    <button type="submit">Submit Flag</button>
-</form>
-<?php if ($flag_correct): ?><h2 style="color:green;">✅ Lab Passed!</h2><?php endif; ?>
-<a href="<?= BASE_URL ?>modules/labs/index.php">Back to Labs</a>
-</div></body></html>
+<header class="site-header">
+    <div class="inner">
+        <div class="logo">⚡ PingGrid <span>Host Monitor</span></div>
+        <nav>
+            <a href="#">Dashboard</a>
+            <a href="#">Hosts</a>
+            <a href="#">Logs</a>
+        </nav>
+    </div>
+</header>
+
+<main class="site-main">
+    <div class="site-card">
+        <h1>Ping a Host</h1>
+        <p class="sub"><span class="status-dot"></span>All systems operational. Enter an IP address to run a diagnostic ping.</p>
+
+        <form method="GET" class="site-form">
+            <label for="ip">Target IP Address</label>
+            <input type="text" name="ip" id="ip" placeholder="127.0.0.1" value="<?= htmlspecialchars($_GET['ip'] ?? '') ?>">
+            <button type="submit" class="btn-site">▶ Run Ping Test</button>
+        </form>
+
+        <?php if ($output): ?>
+            <div class="terminal">
+                <div class="term-head">Output — ping diagnostic</div>
+                <?= htmlspecialchars($output) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($msg): ?>
+            <div class="alert ok"><?= $msg ?></div>
+        <?php endif; ?>
+    </div>
+
+    <div class="flag-box">
+        <h3>🏴 Achieved RCE? Submit the flag:</h3>
+        <form method="POST" class="site-form">
+            <?= csrfField() ?>
+            <input type="text" name="flag" placeholder="Enter flag">
+            <button type="submit" class="btn-site">Submit Flag</button>
+        </form>
+        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+    </div>
+</main>
+</body>
+</html>

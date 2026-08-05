@@ -35,25 +35,72 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
 }
 ?>
 <!DOCTYPE html>
-<html><head><link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css"></head>
-<body><div class="container">
-<?php include '../../includes/nav.php'; ?>
-<h1>💉 XSS Playground</h1>
-<p>Inject a JavaScript alert into the comment box. Try: <code><script>alert(1)</script></code></p>
-<form method="GET">
-    <input type="text" name="comment" placeholder="Type something...">
-    <button type="submit">Post</button>
-</form>
-<div style="border:1px solid rgba(0,242,254,0.15); padding:12px; border-radius:8px; min-height:40px; margin:10px 0;"><?= $output ?></div>
-<?php if ($xss_triggered): ?><div style="background:rgba(0,242,254,0.1); border-left:4px solid #00f2fe; padding:12px; border-radius:8px;">🚨 XSS executed! Now submit the flag below.</div><?php endif; ?>
+<html>
+<head>
+    <title>DevForum | Community</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>includes/lab.css">
+    <style>
+        :root { --accent: #7c3aed; --accent2: #4c1d95; }
+        .thread { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+        .thread .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg,#7c3aed,#4c1d95); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; }
+        .thread .meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+        .comment-box { background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 12px; padding: 16px; margin-top: 12px; }
+    </style>
+</head>
+<body>
+<div class="lab-banner">
+    <div><span class="brand">🛡️ BBA</span> Lab — Reflected XSS</div>
+    <div><a class="link" href="<?= BASE_URL ?>modules/labs/index.php">⬅ Back to Labs</a></div>
+</div>
 
-<form method="POST">
-    <?= csrfField() ?>
-    <h3>🏴 Found the Flag?</h3>
-    <input type="text" name="flag" placeholder="Enter flag">
-    <button type="submit">Submit Flag</button>
-</form>
-<?php if ($flag_msg): ?><div style="margin-top:10px; font-weight:bold;"><?= htmlspecialchars($flag_msg) ?></div><?php endif; ?>
-<?php if ($flag_correct): ?><h2 style="color:green;">✅ Lab Passed!</h2><?php endif; ?>
-<a href="<?= BASE_URL ?>dashboard.php" style="display:inline-block; margin-top:15px;">⬅ Back to Dashboard</a>
-</div></body></html>
+<header class="site-header">
+    <div class="inner">
+        <div class="logo">DevForum <span>/ community</span></div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Topics</a>
+            <a href="#">Profile</a>
+        </nav>
+    </div>
+</header>
+
+<main class="site-main">
+    <div class="site-card">
+        <h1>Post a comment</h1>
+        <p class="sub">Share your thoughts on the latest security news.</p>
+
+        <form method="GET" class="site-form">
+            <input type="text" name="comment" placeholder="Write a comment...">
+            <button type="submit" class="btn-site">💬 Post Comment</button>
+        </form>
+
+        <?php if ($output !== ""): ?>
+            <div class="comment-box">
+                <div class="thread">
+                    <div class="avatar">Yo</div>
+                    <div>
+                        <div class="meta">Anonymous · just now</div>
+                        <div><?= $output ?></div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($xss_triggered): ?>
+            <div class="alert ok" style="margin-top:16px;">🚨 XSS executed! Now submit the flag below.</div>
+        <?php endif; ?>
+    </div>
+
+    <div class="flag-box">
+        <h3>🏴 Found the flag?</h3>
+        <form method="POST" class="site-form">
+            <?= csrfField() ?>
+            <input type="text" name="flag" placeholder="Enter flag">
+            <button type="submit" class="btn-site">Submit Flag</button>
+        </form>
+        <?php if ($flag_msg): ?><div style="margin-top:10px;"><?= htmlspecialchars($flag_msg) ?></div><?php endif; ?>
+        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+    </div>
+</main>
+</body>
+</html>

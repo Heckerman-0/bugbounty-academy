@@ -34,22 +34,67 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
 }
 ?>
 <!DOCTYPE html>
-<html><head><link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css"></head>
-<body><div class="container">
-<h1>SQL Injection Lab</h1>
-<p>Try to break the search. Hint: Use <code>' OR '1'='1</code></p>
-<form method="GET">
-    <input type="text" name="search" placeholder="Search for user...">
-    <button type="submit">Search</button>
-</form>
-<div style="border:1px solid #ccc; padding:10px;"><?= $msg ?></div>
+<html>
+<head>
+    <title>AcmeCorp | Employee Directory</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>includes/lab.css">
+    <style>
+        :root { --accent: #2563eb; --accent2: #1e40af; }
+        .emp-table td:first-child { font-weight: 600; }
+        .searchbar { display: flex; gap: 10px; max-width: 520px; }
+    </style>
+</head>
+<body>
+<div class="lab-banner">
+    <div><span class="brand">🛡️ BBA</span> Lab — SQL Injection</div>
+    <div><a class="link" href="<?= BASE_URL ?>modules/labs/index.php">⬅ Back to Labs</a></div>
+</div>
 
-<form method="POST">
-    <?= csrfField() ?>
-    <h3>Found the Admin Password? Submit it:</h3>
-    <input type="text" name="flag" placeholder="Enter flag">
-    <button type="submit">Submit Flag</button>
-</form>
-<?php if ($flag_correct): ?><h2 style="color:green;">✅ Lab Passed!</h2><?php endif; ?>
-<a href="<?= BASE_URL ?>dashboard.php">Back</a>
-</div></body></html>
+<header class="site-header">
+    <div class="inner">
+        <div class="logo">AcmeCorp <span>Employee Directory</span></div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Directory</a>
+            <a href="#">Admin</a>
+        </nav>
+    </div>
+</header>
+
+<main class="site-main">
+    <div class="site-card">
+        <h1>Find an Employee</h1>
+        <p class="sub">Search our internal employee directory by name.</p>
+
+        <form method="GET" class="searchbar">
+            <input type="text" name="search" placeholder="Search employees..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+            <button type="submit" class="btn-site">Search</button>
+        </form>
+
+        <?php if ($msg): ?>
+            <div class="alert <?= (stripos($msg,'No users')!==false) ? 'warn' : 'ok' ?>"><?= $msg ?></div>
+        <?php endif; ?>
+
+        <?php if (stripos($msg, 'Exploit') !== false): ?>
+            <table class="site-table">
+                <thead><tr><th>Name</th><th>Role</th><th>Password (leaked)</th></tr></thead>
+                <tbody>
+                    <tr><td>Admin</td><td>Administrator</td><td><code>admin_password_123</code></td></tr>
+                    <tr><td>John</td><td>Support</td><td><code>qwerty</code></td></tr>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+
+    <div class="flag-box">
+        <h3>🏴 Found the admin password? Submit it as the flag:</h3>
+        <form method="POST" class="site-form">
+            <?= csrfField() ?>
+            <input type="text" name="flag" placeholder="Enter flag">
+            <button type="submit" class="btn-site">Submit Flag</button>
+        </form>
+        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+    </div>
+</main>
+</body>
+</html>

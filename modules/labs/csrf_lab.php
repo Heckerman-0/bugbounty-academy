@@ -32,34 +32,71 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
 }
 ?>
 <!DOCTYPE html>
-<html><head><link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css"></head>
-<body><div class="container">
-<?php include '../../includes/nav.php'; ?>
-<h1>🕸️ CSRF Exploitation Lab</h1>
-<p>This profile page lets you change your email. Notice the <strong>update email</strong> form has <strong>no CSRF token</strong> — that's the vulnerability. A malicious site could submit this form on your behalf.</p>
-
-<div style="background:rgba(0,242,254,0.05); padding:15px; border-radius:10px; border-left:4px solid #00f2fe; margin:15px 0;">
-    <p><strong>📌 Your task:</strong></p>
-    <ul>
-        <li>Submit the "update email" form below (simulating the victim).</li>
-        <li>Observe that the request succeeds with <em>no CSRF token</em>.</li>
-        <li>Then submit the flag to prove you exploited the CSRF vulnerability.</li>
-    </ul>
+<html>
+<head>
+    <title>MyAccount | Settings</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>includes/lab.css">
+    <style>
+        :root { --accent: #4338ca; --accent2: #312e81; }
+        .settings-nav { display:flex; gap:6px; border-bottom:2px solid var(--border); margin-bottom:20px; flex-wrap:wrap; }
+        .settings-nav a { padding:10px 16px; font-size:0.9rem; color:var(--muted); border-bottom:3px solid transparent; margin-bottom:-2px; }
+        .settings-nav a.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+        .field { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--border); }
+        .field .k { font-weight:600; }
+        .field .v { color:var(--muted); }
+    </style>
+</head>
+<body>
+<div class="lab-banner">
+    <div><span class="brand">🛡️ BBA</span> Lab — CSRF</div>
+    <div><a class="link" href="<?= BASE_URL ?>modules/labs/index.php">⬅ Back to Labs</a></div>
 </div>
 
-<form method="POST" style="max-width:360px; display:flex; flex-direction:column; gap:10px;">
-    <input type="email" name="new_email" placeholder="attacker@evil.com" value="attacker@evil.com">
-    <button type="submit">Update Email (Vulnerable - no CSRF token)</button>
-</form>
+<header class="site-header">
+    <div class="inner">
+        <div class="logo">👤 MyAccount <span>Account Settings</span></div>
+        <nav>
+            <a href="#">Profile</a>
+            <a href="#">Security</a>
+            <a href="#">Billing</a>
+        </nav>
+    </div>
+</header>
 
-<div style="border:1px solid #ccc; padding:10px; margin-top:10px;"><?= $msg ?></div>
+<main class="site-main">
+    <div class="site-card">
+        <div class="settings-nav">
+            <a href="#" class="active">Profile</a>
+            <a href="#">Security</a>
+            <a href="#">Notifications</a>
+        </div>
 
-<form method="POST">
-    <?= csrfField() ?>
-    <h3>Exploited the CSRF? Submit the flag:</h3>
-    <input type="text" name="flag" placeholder="Enter flag">
-    <button type="submit">Submit Flag</button>
-</form>
-<?php if ($flag_correct): ?><h2 style="color:green;">✅ Lab Passed!</h2><?php endif; ?>
-<a href="<?= BASE_URL ?>modules/labs/index.php" style="display:inline-block; margin-top:15px;">Back to Labs</a>
-</div></body></html>
+        <h1>Account Settings</h1>
+        <p class="sub">Manage your personal information and email address.</p>
+
+        <div class="field"><span class="k">Name</span><span class="v">Mr. Admin</span></div>
+        <div class="field"><span class="k">Username</span><span class="v">admin</span></div>
+        <div class="field"><span class="k">Email</span><span class="v">admin@example.com</span></div>
+
+        <h3 style="margin-top:24px;">Update Email</h3>
+        <form method="POST" class="site-form">
+            <input type="email" name="new_email" placeholder="attacker@evil.com" value="attacker@evil.com">
+            <button type="submit" class="btn-site">Update Email</button>
+        </form>
+        <p style="font-size:0.8rem; color:var(--muted); margin-top:8px;">⚠️ This form has no CSRF token — a malicious site could submit it on your behalf.</p>
+
+        <?php if ($msg): ?><div class="alert <?= $broke ? 'ok' : 'err' ?>" style="margin-top:16px;"><?= $msg ?></div><?php endif; ?>
+    </div>
+
+    <div class="flag-box">
+        <h3>🏴 Exploited the CSRF? Submit the flag:</h3>
+        <form method="POST" class="site-form">
+            <?= csrfField() ?>
+            <input type="text" name="flag" placeholder="Enter flag">
+            <button type="submit" class="btn-site">Submit Flag</button>
+        </form>
+        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+    </div>
+</main>
+</body>
+</html>

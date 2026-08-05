@@ -28,43 +28,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
 }
 ?>
 <!DOCTYPE html>
-<html><head><link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css"></head>
-<body><div class="container">
-<?php include '../../includes/nav.php'; ?>
-<h1>💉 HTTP Header Manipulation Lab</h1>
-<p>Your goal is to change your <code>User-Agent</code> to <strong>AdminHacker</strong>.</p>
-
-<div style="background:rgba(0,242,254,0.05); padding:15px; border-radius:10px; border-left:4px solid #00f2fe; margin:15px 0;">
-    <p><strong>📌 How to do it:</strong></p>
-    <ul>
-        <li><strong>Chrome/Edge:</strong> Open DevTools (F12) → Network tab → Right-click any request → Edit Headers → Add/Modify <code>User-Agent</code>.</li>
-        <li><strong>Firefox:</strong> DevTools (F12) → Network → Edit and Resend.</li>
-        <li><strong>Burp Suite:</strong> Capture the request and modify the <code>User-Agent</code> header.</li>
-    </ul>
+<html>
+<head>
+    <title>SecureDocs | Portal</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>includes/lab.css">
+    <style>
+        :root { --accent: #0284c7; --accent2: #075985; }
+        .fp-wrap { display:flex; gap:10px; align-items:center; background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin:14px 0; }
+        .fp-wrap code { word-break: break-all; }
+        .stat-row { display:flex; gap:16px; flex-wrap:wrap; margin-top:16px; }
+        .stat-box { background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:16px 20px; flex:1; min-width:120px; text-align:center; }
+        .stat-box .v { font-size:1.4rem; font-weight:800; color:var(--accent); }
+        .stat-box .k { font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+    </style>
+</head>
+<body>
+<div class="lab-banner">
+    <div><span class="brand">🛡️ BBA</span> Lab — HTTP Header Manipulation</div>
+    <div><a class="link" href="<?= BASE_URL ?>modules/labs/index.php">⬅ Back to Labs</a></div>
 </div>
 
-<p><strong>Your current User-Agent:</strong> <code style="background:#0d0d1f; padding:4px 10px; border-radius:5px;"><?= htmlspecialchars($user_agent) ?></code></p>
-
-<?php if ($is_admin_agent): ?>
-    <div style="background:rgba(0,242,254,0.15); padding:15px; border-radius:10px; border:1px solid #00f2fe;">
-        🎯 <strong>Great!</strong> You are sending the correct header. Submit the flag below.
+<header class="site-header">
+    <div class="inner">
+        <div class="logo">🔒 SecureDocs <span>Protected Portal</span></div>
+        <nav>
+            <a href="#">Documents</a>
+            <a href="#">Admin Console</a>
+            <a href="#">Settings</a>
+        </nav>
     </div>
-<?php else: ?>
-    <div style="background:rgba(254,0,0,0.05); padding:15px; border-radius:10px; border:1px solid rgba(254,0,0,0.2); color:#ff6b6b;">
-        ⚠️ You are not sending the <code>AdminHacker</code> User-Agent. Change it and refresh this page!
+</header>
+
+<main class="site-main">
+    <div class="site-card">
+        <h1>Access Restricted Content</h1>
+        <p class="sub">This portal grants admin access based on your device's User-Agent header. Spoof it to <code>AdminHacker</code> to unlock the admin panel.</p>
+
+        <div class="stat-row">
+            <div class="stat-box"><div class="v"><?= $is_admin_agent ? '✅' : '🔒' ?></div><div class="k">Access</div></div>
+            <div class="stat-box"><div class="v"><?= $is_admin_agent ? 'ADMIN' : 'GUEST' ?></div><div class="k">Role</div></div>
+        </div>
+
+        <div class="fp-wrap">
+            <span>🖥️ Your User-Agent:</span>
+            <code><?= htmlspecialchars($user_agent) ?></code>
+        </div>
+
+        <?php if ($is_admin_agent): ?>
+            <div class="alert ok">🎯 <strong>Great!</strong> You are sending the correct header. Submit the flag below.</div>
+        <?php else: ?>
+            <div class="alert err">⚠️ You are not sending the <code>AdminHacker</code> User-Agent. Use DevTools (F12) → Network → Edit &amp; Resend to change it, then refresh.</div>
+        <?php endif; ?>
     </div>
-<?php endif; ?>
 
-<hr style="border-color: rgba(255,255,255,0.05); margin:25px 0;">
-
-<form method="POST">
-    <?= csrfField() ?>
-    <h3>📝 Enter the Flag:</h3>
-    <input type="text" name="flag" placeholder="Enter flag..." style="width:300px;">
-    <button type="submit">Submit</button>
-</form>
-<?php if ($flag_msg): ?><div style="margin-top:10px; font-weight:bold;"><?= $flag_msg ?></div><?php endif; ?>
-<?php if ($flag_correct): ?><h2 style="color:green;">✅ Lab Passed!</h2><?php endif; ?>
-
-<a href="<?= BASE_URL ?>dashboard.php" style="display:inline-block; margin-top:20px;">⬅ Back to Dashboard</a>
-</div></body></html>
+    <div class="flag-box">
+        <h3>📝 Enter the Flag:</h3>
+        <form method="POST" class="site-form">
+            <?= csrfField() ?>
+            <input type="text" name="flag" placeholder="Enter flag...">
+            <button type="submit" class="btn-site">Submit</button>
+        </form>
+        <?php if ($flag_msg): ?><div style="margin-top:10px; font-weight:bold;"><?= $flag_msg ?></div><?php endif; ?>
+        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+    </div>
+</main>
+</body>
+</html>
