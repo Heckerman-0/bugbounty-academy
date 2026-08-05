@@ -205,8 +205,10 @@ $total_modules = $total_items;
                     $link = 'modules/labs/dir_traversal.php?id=' . (int)$item['id'];
                 } elseif ($slug == 'auth-bypass-lab') {
                     $link = 'modules/labs/auth_bypass.php?id=' . (int)$item['id'];
-                } elseif ($slug == 'csrf-lab') {
+} elseif ($slug == 'csrf-lab') {
                     $link = 'modules/labs/csrf_lab.php?id=' . (int)$item['id'];
+                } elseif ($slug == 'sqli-playground') {
+                    $link = 'modules/labs/sqli.php?id=' . (int)$item['id'];
                 } elseif ($item['type'] == 'lab') {
                     $link = 'modules/labs/sqli.php?id=' . (int)$item['id'];
                 }
