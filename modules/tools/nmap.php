@@ -1,7 +1,7 @@
 ﻿<?php 
 require_once '../../includes/auth.php';
 if (!isLoggedIn()) redirect('login.php');
-$id = $_GET['id']; // This is 3
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 5;
 $output = "";
 $flag_msg = "";
 $flag_correct = false;
@@ -9,25 +9,29 @@ $flag_correct = false;
 // Simulated Nmap output
 if (isset($_GET['cmd'])) {
     $cmd = $_GET['cmd'];
-    if (strpos($cmd, "nmap -sV 127.0.0.1") !== false) {
-        $output = "Starting Nmap...<br>PORT   STATE SERVICE VERSION<br>22/tcp open  ssh     OpenSSH 8.0<br>80/tcp open  http    Apache 2.4<br>✅ Scan complete! The hidden flag port is 22.";
-        markComplete($_SESSION['user_id'], $id); // Mark tool as read
+    if (stripos($cmd, "nmap -sV 127.0.0.1") !== false) {
+        $output = "Starting Nmap...<br>PORT   STATE SERVICE VERSION<br>22/tcp open  ssh     OpenSSH 8.0<br>80/tcp open  http    Apache 2.4<br>8080/tcp open  http-proxy  Node.js<br>✅ Scan complete! The hidden flag port is 8080.";
+        markComplete($_SESSION['user_id'], $id); // Mark tool/lab as read
     } else {
         $output = "Command not recognized. Try: nmap -sV 127.0.0.1";
     }
 }
 
-// Flag submission for the Nmap Lab (ID 5)
+// Flag submission for the Nmap Lab
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
-    $stmt = $pdo->prepare("SELECT flag_text FROM lab_flags WHERE content_id=5");
-    $stmt->execute();
-    $flagData = $stmt->fetch();
-    if ($flagData && $_POST['flag'] === $flagData['flag_text']) {
-        markComplete($_SESSION['user_id'], 5);
-        $flag_correct = true;
-        $flag_msg = "🎉 CORRECT! Nmap Lab Complete.";
+    if (!verifyCsrfToken()) {
+        $flag_msg = "Invalid form submission. Please try again.";
     } else {
-        $flag_msg = "❌ Wrong flag. Hint: It's a port number.";
+        $stmt = $pdo->prepare("SELECT flag_text FROM lab_flags WHERE content_id=?");
+        $stmt->execute([$id]);
+        $flagData = $stmt->fetch();
+        if ($flagData && hash_equals($flagData['flag_text'], $_POST['flag'])) {
+            markComplete($_SESSION['user_id'], $id);
+            $flag_correct = true;
+            $flag_msg = "🎉 CORRECT! Nmap Lab Complete.";
+        } else {
+            $flag_msg = "❌ Wrong flag. Hint: It's a port number.";
+        }
     }
 }
 ?>
@@ -46,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
 <hr style="border-color: rgba(255,255,255,0.05); margin:20px 0;">
 
 <form method="POST">
+    <?= csrfField() ?>
     <h3>🎯 Submit the flag (Port Number):</h3>
     <input type="text" name="flag" placeholder="Enter flag" style="width:200px;">
     <button type="submit">Submit Flag</button>

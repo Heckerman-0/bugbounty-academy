@@ -12,14 +12,60 @@ function isAdmin() {
 
 function registerUser($username, $email, $password) {
     global $pdo;
+    // Basic validation
+    if (strlen($username) < 3 || strlen($username) > 50) {
+        return "Username must be 3-50 characters.";
+    }
+    if (!preg_match('/^[a-zA-Z0-9_\-]+$/', $username)) {
+        return "Username can only contain letters, numbers, underscore, and hyphen.";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Invalid email address.";
+    }
+    if (strlen($password) < 6) {
+        return "Password must be at least 6 characters.";
+    }
     $hash = password_hash($password, PASSWORD_DEFAULT);
     try {
         $stmt = $pdo->prepare("INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)");
         $stmt->execute([$username, $email, $hash]);
         return true;
     } catch(PDOException $e) {
+        return "Username or email already exists.";
+    }
+}
+
+// ---- CSRF protection ----
+function generateCsrfToken() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrfField() {
+    return '<input type="hidden" name="csrf_token" value="' . generateCsrfToken() . '">';
+}
+
+function verifyCsrfToken() {
+    if (!isset($_POST['csrf_token']) || !isset($_SESSION['csrf_token'])) {
         return false;
     }
+    return hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
+}
+
+// Verify CSRF token sent via GET query parameter (for links/state-changing GET actions)
+function verifyCsrfTokenGet() {
+    if (!isset($_GET['csrf_token']) || !isset($_SESSION['csrf_token'])) {
+        return false;
+    }
+    return hash_equals($_SESSION['csrf_token'], $_GET['csrf_token']);
+}
+
+// Append the CSRF token to a URL for state-changing GET links
+function csrfUrl($url) {
+    $sep = (strpos($url, '?') === false) ? '?' : '&';
+    return $url . $sep . 'csrf_token=' . urlencode(generateCsrfToken());
 }
 
 function loginUser($username, $password) {

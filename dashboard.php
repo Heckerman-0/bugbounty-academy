@@ -8,7 +8,7 @@ $user->execute([$_SESSION['user_id']]);
 $streak = $user->fetchColumn();
 
 // Fetch all content grouped by module
-$content = $pdo->query("SELECT * FROM content ORDER BY FIELD(module_group, 'http', 'nmap', NULL), id")->fetchAll();
+$content = $pdo->query("SELECT * FROM content ORDER BY FIELD(module_group, 'http', 'nmap', 'sqli', 'xss', 'owasp', 'dir', 'auth', 'csrf', 'cmd', 'ssrf', 'idor', 'upload', NULL), id")->fetchAll();
 
 // Helper to check completion
 function isComplete($id) {
@@ -150,13 +150,24 @@ $total_modules = $total_items;
             <div class="module-card" style="border-color: rgba(254,0,254,0.2);">
                 <div class="module-title">🎯 Bonus Challenge <span class="bonus-tag">Side Quest</span></div>
         <?php else: ?>
+            <?php 
+                $module_names = [
+                    'http' => '📦 Module 1: HTTP & Request Smuggling Basics',
+                    'nmap' => '📦 Module 2: Network Scanning (Nmap)',
+                    'sqli' => '📦 Module 3: SQL Injection',
+                    'xss'  => '📦 Module 4: Cross-Site Scripting (XSS)',
+                    'owasp'=> '📦 Module 5: OWASP Top 10',
+'dir'  => '📦 Module 6: Directory Traversal',
+                    'auth' => '📦 Module 7: Auth Bypass',
+                    'cmd'  => '📦 Module 8: Command Injection',
+                    'ssrf' => '📦 Module 9: SSRF',
+                    'idor' => '📦 Module 10: IDOR',
+                    'upload' => '📦 Module 11: File Upload',
+                ];
+            ?>
             <div class="module-card">
                 <div class="module-title">
-                    <?php 
-                        if ($group == 'http') echo '📦 Module 1: HTTP Basics';
-                        elseif ($group == 'nmap') echo '📦 Module 2: Network Scanning (Nmap)';
-                        else echo ucfirst($group);
-                    ?>
+                    <?= $module_names[$group] ?? ucfirst($group) ?>
                 </div>
         <?php endif; ?>
         
@@ -169,14 +180,27 @@ $total_modules = $total_items;
                 $completed = isComplete($item['id']);
                 $status_icon = $completed ? '✅' : '⬜';
                 
-                // Determine link
+                // Route by slug so new content always maps to the right page
+                $slug = $item['slug'] ?? '';
                 $link = '#';
-                if ($item['type'] == 'lesson') $link = 'modules/lessons/view.php?id=' . $item['id'];
-                elseif ($item['type'] == 'tool') $link = 'modules/tools/nmap.php?id=' . $item['id'];
-                elseif ($item['type'] == 'lab') {
-                    if ($item['id'] == 4) $link = 'modules/labs/header_lab.php?id=' . $item['id']; // We'll create this below
-                    elseif ($item['id'] == 5) $link = 'modules/tools/nmap.php?id=3'; // Nmap lab is integrated
-                    else $link = 'modules/labs/sqli.php?id=' . $item['id'];
+                if ($item['type'] == 'lesson') {
+                    $link = 'modules/lessons/view.php?id=' . (int)$item['id'];
+                } elseif ($slug == 'nmap-basics' || $slug == 'nmap-lab') {
+                    $link = 'modules/tools/nmap.php?id=' . (int)$item['id'];
+} elseif ($slug == 'header-manipulation') {
+                    $link = 'modules/labs/header_lab.php?id=' . (int)$item['id'];
+                } elseif ($slug == 'xss-playground') {
+                    $link = 'modules/labs/xss.php?id=' . (int)$item['id'];
+                } elseif ($slug == 'cmd-injection') {
+                    $link = 'modules/labs/cmd_inject.php?id=' . (int)$item['id'];
+                } elseif ($slug == 'ssrf-lab') {
+                    $link = 'modules/labs/ssrf.php?id=' . (int)$item['id'];
+                } elseif ($slug == 'idor-lab') {
+                    $link = 'modules/labs/idor.php?id=' . (int)$item['id'];
+                } elseif ($slug == 'file-upload') {
+                    $link = 'modules/labs/file_upload.php?id=' . (int)$item['id'];
+                } elseif ($item['type'] == 'lab') {
+                    $link = 'modules/labs/sqli.php?id=' . (int)$item['id'];
                 }
             ?>
                 <div class="module-item">

@@ -1,7 +1,10 @@
 ﻿<?php require_once 'includes/auth.php'; 
+$error = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (loginUser($_POST['username'], $_POST['password'])) {
-        header("Location: dashboard.php"); exit;
+    if (!verifyCsrfToken()) {
+        $error = "Invalid form submission. Please try again.";
+    } elseif (loginUser($_POST['username'], $_POST['password'])) {
+        header("Location: " . BASE_URL . "dashboard.php"); exit;
     } else { $error = "Invalid credentials."; }
 }
 ?>
@@ -10,8 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body><div class="container">
 <?php include 'includes/nav.php'; ?>
 <h1 style="font-size:2.5rem;">🔐 Login</h1>
-<?php if(isset($error)) echo '<div style="color:#ff6b6b;">'.$error.'</div>'; ?>
+<?php if($error) echo '<div style="color:#ff6b6b; margin-bottom:15px;">'.htmlspecialchars($error).'</div>'; ?>
 <form method="POST">
+    <?= csrfField() ?>
     <input type="text" name="username" placeholder="Username or Email" required>
     <input type="password" name="password" placeholder="Password" required>
     <button type="submit" style="width:100%;">Login</button>

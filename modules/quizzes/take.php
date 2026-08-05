@@ -1,7 +1,8 @@
 ﻿<?php 
 require_once '../../includes/auth.php';
 if (!isLoggedIn()) redirect('login.php');
-$quiz_id = $_GET['quiz_id'];
+$quiz_id = (int)($_GET['quiz_id'] ?? 0);
+if ($quiz_id <= 0) die("Quiz not found");
 $score = 0;
 $total = 0;
 $graded = false;

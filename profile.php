@@ -7,37 +7,45 @@ $error = '';
 
 // Handle Password Change
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_password'])) {
-    $old = $_POST['old_password'];
-    $new = $_POST['new_password'];
-    $confirm = $_POST['confirm_password'];
-    
-    if ($new !== $confirm) {
-        $error = '❌ New passwords do not match.';
-    } elseif (strlen($new) < 6) {
-        $error = '❌ Password must be at least 6 characters.';
+    if (!verifyCsrfToken()) {
+        $error = '❌ Invalid security token. Please try again.';
     } else {
-        $result = changePassword($_SESSION['user_id'], $old, $new);
-        if ($result === true) {
-            $msg = '✅ Password updated successfully!';
+        $old = $_POST['old_password'];
+        $new = $_POST['new_password'];
+        $confirm = $_POST['confirm_password'];
+
+        if ($new !== $confirm) {
+            $error = '❌ New passwords do not match.';
+        } elseif (strlen($new) < 6) {
+            $error = '❌ Password must be at least 6 characters.';
         } else {
-            $error = '❌ ' . $result;
+            $result = changePassword($_SESSION['user_id'], $old, $new);
+            if ($result === true) {
+                $msg = '✅ Password updated successfully!';
+            } else {
+                $error = '❌ ' . $result;
+            }
         }
     }
 }
 
 // Handle Email Change
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_email'])) {
-    $new_email = $_POST['new_email'];
-    if (filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
-        $result = changeEmail($_SESSION['user_id'], $new_email);
-        if ($result === true) {
-            $msg = '✅ Email updated successfully!';
-            $_SESSION['email'] = $new_email; // Update session
-        } else {
-            $error = '❌ ' . $result;
-        }
+    if (!verifyCsrfToken()) {
+        $error = '❌ Invalid security token. Please try again.';
     } else {
-        $error = '❌ Invalid email address.';
+        $new_email = $_POST['new_email'];
+        if (filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
+            $result = changeEmail($_SESSION['user_id'], $new_email);
+            if ($result === true) {
+                $msg = '✅ Email updated successfully!';
+                $_SESSION['email'] = $new_email; // Update session
+            } else {
+                $error = '❌ ' . $result;
+            }
+        } else {
+            $error = '❌ Invalid email address.';
+        }
     }
 }
 
@@ -69,7 +77,8 @@ $user = $stmt->fetch();
         <div style="background:rgba(255,255,255,0.02); padding:25px; border-radius:16px; border:1px solid rgba(255,255,255,0.05);">
             <h3 style="margin-top:0;">📧 Change Email</h3>
             <p style="color:#888; font-size:0.9rem;">Current: <strong style="color:#e0e0ff;"><?= htmlspecialchars($user['email']) ?></strong></p>
-            <form method="POST">
+<form method="POST">
+                <?= csrfField() ?>
                 <input type="email" name="new_email" placeholder="New Email Address" required>
                 <button type="submit" name="change_email" style="width:100%;">Update Email</button>
             </form>
@@ -78,7 +87,8 @@ $user = $stmt->fetch();
         <!-- Change Password -->
         <div style="background:rgba(255,255,255,0.02); padding:25px; border-radius:16px; border:1px solid rgba(255,255,255,0.05);">
             <h3 style="margin-top:0;">🔒 Change Password</h3>
-            <form method="POST">
+<form method="POST">
+                <?= csrfField() ?>
                 <input type="password" name="old_password" placeholder="Current Password" required>
                 <input type="password" name="new_password" placeholder="New Password (min 6 chars)" required>
                 <input type="password" name="confirm_password" placeholder="Confirm New Password" required>
