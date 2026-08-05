@@ -1,0 +1,3 @@
+Welcome to the file viewer!
+
+Try reading files in this directory, then try to escape it using ../ to find the secret.
