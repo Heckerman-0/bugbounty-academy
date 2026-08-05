@@ -89,8 +89,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This tool lets you ping a host IP address.',
+    'The app passes your input directly into a shell command (ping) without sanitising it.',
+    'That means any shell command you append will also run on the server.',
+    'Enter a normal IP first, e.g.  127.0.0.1 , and run the test to see ping output.',
+    'Now append a shell command after the IP using a command separator.',
+    'Try:  127.0.0.1; whoami   or   127.0.0.1 && cat /etc/passwd',
+    'If you see the command output, you have achieved Remote Code Execution (RCE).',
+    'Find the flag and submit it below to complete the lab.',
+];
+$stuckTip = 'Use a semicolon or && to chain commands, e.g. 127.0.0.1; whoami';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

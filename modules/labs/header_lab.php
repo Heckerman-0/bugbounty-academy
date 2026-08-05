@@ -88,9 +88,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag...">
             <button type="submit" class="btn-site">Submit</button>
         </form>
-        <?php if ($flag_msg): ?><div style="margin-top:10px; font-weight:bold;"><?= $flag_msg ?></div><?php endif; ?>
+<?php if ($flag_msg): ?><div style="margin-top:10px; font-weight:bold;"><?= $flag_msg ?></div><?php endif; ?>
         <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This portal decides whether to give you admin access based on your HTTP User-Agent header.',
+    'The server checks if your User-Agent contains the magic value "AdminHacker".',
+    'Normally your browser sends its own User-Agent, so you appear as a guest.',
+    'To pass, you must change your User-Agent header to contain "AdminHacker".',
+    'Open DevTools (F12) → Network tab → right-click a request → Edit & Resend → modify the User-Agent header.',
+    'Alternatively use a tool like Burp Suite to intercept and modify the request.',
+    'Once your User-Agent contains AdminHacker, refresh the page — the portal unlocks admin access.',
+    'Submit the revealed flag below to complete the lab.',
+];
+$stuckTip = 'Set your User-Agent to AdminHacker using DevTools "Edit and Resend" or Burp Suite.';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

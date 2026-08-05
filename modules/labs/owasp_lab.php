@@ -127,8 +127,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This is a training quiz that asks you to classify security vulnerabilities into OWASP Top 10 categories.',
+    'There are 4 scenarios, each describing a vulnerability.',
+    'For each scenario, read the description and pick the correct category from the dropdown.',
+    'Scenario 1 — SQL injection into a query → answer: Injection.',
+    'Scenario 2 — accessing another user\'s files by changing an ID → answer: Broken Access Control.',
+    'Scenario 3 — error page leaking DB connection string → answer: Security Misconfiguration.',
+    'Scenario 4 — comment field storing raw JavaScript → answer: XSS (Cross-Site Scripting).',
+    'Answer all four correctly to earn the flag, then submit it below.',
+];
+$stuckTip = 'The answers are: 1) Injection, 2) Broken Access Control, 3) Security Misconfiguration, 4) XSS.';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

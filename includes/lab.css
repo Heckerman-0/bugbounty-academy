@@ -205,6 +205,41 @@ pre { padding: 14px; overflow-x: auto; }
 .dropzone:hover { border-color: var(--accent); background: #f0f9ff; }
 .dropzone .dz-icon { font-size: 2.4rem; display: block; margin-bottom: 8px; }
 
+/* ---- "Stuck?" help widget ---- */
+.stuck-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 999; }
+.stuck-btn {
+    background: linear-gradient(135deg, #fe00fe, #4a00e0);
+    color: #fff; border: none; padding: 14px 22px; border-radius: 50px;
+    font-weight: 700; font-size: 0.95rem; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(254,0,254,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+}
+.stuck-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(254,0,254,0.5); }
+.stuck-panel {
+    position: fixed; bottom: 84px; right: 20px; width: 360px; max-width: calc(100vw - 40px);
+    background: #fff; border: 1px solid var(--border); border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25); overflow: hidden;
+    display: none; z-index: 999;
+}
+.stuck-panel.open { display: block; animation: stuckIn 0.25s ease; }
+@keyframes stuckIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.stuck-head {
+    background: linear-gradient(135deg, #fe00fe, #4a00e0);
+    color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+}
+.stuck-head h3 { margin: 0; font-size: 1.05rem; color: #fff; }
+.stuck-close { background: rgba(255,255,255,0.2); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; line-height: 1; }
+.stuck-body { padding: 18px 20px; max-height: 60vh; overflow-y: auto; }
+.stuck-body p { color: var(--muted); font-size: 0.9rem; margin: 0 0 12px; line-height: 1.55; }
+.stuck-body ol { margin: 0 0 12px; padding-left: 20px; }
+.stuck-body li { color: var(--ink); font-size: 0.9rem; line-height: 1.6; margin-bottom: 8px; }
+.stuck-body .hint-tip {
+    background: #eff6ff; border-left: 3px solid var(--accent); padding: 10px 12px;
+    border-radius: 8px; font-size: 0.85rem; color: #1e40af; margin-top: 4px;
+}
+@media (max-width: 480px) { .stuck-panel { right: 10px; } }
+
 /* ---- Lab flag submission box ---- */
 .flag-box {
     background: #0a0a1a;

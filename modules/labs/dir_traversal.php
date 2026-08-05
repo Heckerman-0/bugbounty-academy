@@ -113,8 +113,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This is a document viewer. It fetches and displays files from a folder on the server.',
+    'The server builds the file path by joining your input onto a base directory.',
+    'It does not prevent you from using ".." to climb out of that directory.',
+    'That is the bug: Directory Traversal (also called Path Traversal).',
+    'Browse to a document name, e.g. notes.txt, to see how the viewer works.',
+    'Now try to escape the folder using .. sequences to read a file outside it.',
+    'Enter something like:  ../../secret.txt  to read the hidden secret file.',
+    'The file contains the flag — submit it below to complete the lab.',
+];
+$stuckTip = 'Use  ../  to climb directories, e.g.  ../../secret.txt  reads the flag file outside the folder.';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

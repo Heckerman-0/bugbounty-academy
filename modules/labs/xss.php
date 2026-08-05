@@ -98,9 +98,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($flag_msg): ?><div style="margin-top:10px;"><?= htmlspecialchars($flag_msg) ?></div><?php endif; ?>
+<?php if ($flag_msg): ?><div style="margin-top:10px;"><?= htmlspecialchars($flag_msg) ?></div><?php endif; ?>
         <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This is a public comment box. Whatever you type is echoed straight back on the page.',
+    'The app displays your input without escaping or filtering it — that is the bug.',
+    'Cross-Site Scripting (XSS) means injecting JavaScript that runs in the browser.',
+    'Type a classic XSS payload into the comment box, e.g.  <script>alert(1)</script> .',
+    'When you post, the script executes and the lab detects the XSS trigger.',
+    'Once triggered, the lab unlocks the flag box below.',
+    'Enter the revealed flag to complete the lab.',
+];
+$stuckTip = 'Try the payload: <script>alert(1)</script> — the browser\'s alert proves your script ran.';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

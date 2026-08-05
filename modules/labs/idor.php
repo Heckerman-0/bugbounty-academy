@@ -102,8 +102,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This is a user profile lookup tool. It lets you view any user\'s profile by their ID number.',
+    'The app does NOT check whether you are allowed to view the profile you request.',
+    'That is the bug: Insecure Direct Object Reference (IDOR).',
+    'You are logged in as a normal user, but the app trusts whatever user_id you provide.',
+    'Try changing the user_id to 1 — the administrator account.',
+    'Enter user_id = 1 and view the profile.',
+    'The admin profile leaks a sensitive value, which is the flag.',
+    'Submit that flag below to complete the lab.',
+];
+$stuckTip = 'The admin account is user_id 1. Access it to see the leaked admin hash (the flag).';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

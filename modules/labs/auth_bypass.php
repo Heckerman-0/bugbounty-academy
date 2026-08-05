@@ -107,9 +107,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['flag'])): ?><div style="margin-top:10px;"><?= nl2br(htmlspecialchars($msg)) ?></div><?php endif; ?>
+<?php if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['flag'])): ?><div style="margin-top:10px;"><?= nl2br(htmlspecialchars($msg)) ?></div><?php endif; ?>
         <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This is a bank login page, but it stores and checks credentials insecurely.',
+    'The login query is built by concatenating your username straight into the SQL (simulated here).',
+    'That means you can inject SQL to bypass the password check.',
+    'In the Username field, enter the classic SQL injection payload:   admin\' OR \'1\'=\'1',
+    'Leave the password anything (or blank).',
+    'The WHERE clause becomes always-true, so the query returns the admin account without a valid password.',
+    'The page recognises the bypass and reveals that you logged in as admin.',
+    'Submit the flag below to complete the lab.',
+];
+$stuckTip = 'Log in with username  admin\' OR \'1\'=\'1  and any password to bypass authentication.';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

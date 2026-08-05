@@ -1,4 +1,4 @@
-<?php 
+﻿<?php 
 require_once '../../includes/auth.php';
 if (!isLoggedIn()) redirect('login.php');
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 19;
@@ -102,11 +102,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
     </div>
 </main>
 <script>
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-        var name = e.target.files.length ? e.target.files[0].name : '';
-        var dz = document.querySelector('.dropzone');
-        dz.innerHTML = '<span class="dz-icon">📁</span>' + (name || 'Click to choose a file');
+    document.getElementById("fileInput").addEventListener("change", function(e) {
+        var name = e.target.files.length ? e.target.files[0].name : "";
+        var dz = document.querySelector(".dropzone");
+        dz.innerHTML = "<span class=\"dz-icon\">📁</span>" + (name || "Click to choose a file");
     });
 </script>
+
+<?php
+$stuckSteps = [
+    "This is a file storage site that lets you upload any file.",
+    "The app only checks that a file was uploaded — it does NOT check the file type.",
+    "That means you can upload a PHP file (webshell) even though it claims to accept documents.",
+    "Create a file named  shell.php  containing:   <?php system(\$_GET[\"cmd\"]); ?>",
+    "Upload that file. The app stores it on the server and shows you the path.",
+    "Access the uploaded file in your browser and pass a command, e.g. the upload path + ?cmd=cat+secret.txt",
+    "Running the command reads the hidden flag file on the server.",
+    "Submit the revealed flag below to complete the lab.",
+];
+$stuckTip = "Upload a PHP webshell (shell.php) then call it with a command parameter to read the flag file.";
+include "../../includes/stuck_widget.php";
+?>
 </body>
 </html>

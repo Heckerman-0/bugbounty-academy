@@ -93,8 +93,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This API lets you fetch any URL, and the request is made by the server itself.',
+    'That is the core of SSRF (Server-Side Request Forgery) — the server fetches the URL for you.',
+    'The lab has an internal admin page that is only reachable from inside the server.',
+    'Try fetching a local/internal address instead of a public website.',
+    'Enter   http://127.0.0.1:8080/admin   in the URL field.',
+    'The server fetches that internal page and returns its contents to you.',
+    'The internal page contains the flag — submit it below to complete the lab.',
+];
+$stuckTip = 'The internal admin page lives at http://127.0.0.1:8080/admin — only reachable from the server itself.';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

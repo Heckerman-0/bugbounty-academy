@@ -95,8 +95,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This is an account settings page where you can change the email address.',
+    'The "Update Email" form does NOT include a CSRF token.',
+    'That means any website you visit could silently submit this form on your behalf using your session.',
+    'That is the bug: Cross-Site Request Forgery (CSRF).',
+    'Simply submit the "Update Email" form with the attacker email (attacker@evil.com).',
+    'Because there is no token check, the server accepts the change and marks it as a CSRF exploit.',
+    'The page confirms the email was changed without any CSRF protection.',
+    'Submit the flag below to complete the lab.',
+];
+$stuckTip = 'Just click "Update Email" — the missing CSRF token is the vulnerability. A real attack would do this from a malicious page.';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>

@@ -93,8 +93,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
             <input type="text" name="flag" placeholder="Enter flag">
             <button type="submit" class="btn-site">Submit Flag</button>
         </form>
-        <?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
     </div>
 </main>
+
+<?php
+$stuckSteps = [
+    'This is a search box that looks up employees by name.',
+    'The app builds its SQL query by directly inserting your input (no escaping).',
+    'Try typing a single quote ( \' ) and see what happens — a broken query usually means SQL injection is possible.',
+    'Enter the classic injection payload:  \' OR \'1\'=\'1  in the search box.',
+    'This makes the query\'s WHERE clause always true, so the database returns every user row.',
+    'Notice the admin row leaks the admin password: admin_password_123.',
+    'Enter that value in the flag box below to complete the lab.',
+];
+$stuckTip = 'The magic payload is: \' OR \'1\'=\'1 — it tricks the query into returning all rows.';
+include '../../includes/stuck_widget.php';
+?>
 </body>
 </html>
