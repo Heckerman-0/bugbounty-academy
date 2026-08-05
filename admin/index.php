@@ -7,29 +7,35 @@ $error = "";
 
 // --- DELETE ---
 if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
-    try {
-        $stmt = $pdo->prepare("DELETE FROM content WHERE id = ?");
-        $stmt->execute([$id]);
-        $msg = "✅ Content ID $id deleted successfully.";
-    } catch(PDOException $e) {
-        $error = "❌ Cannot delete: " . $e->getMessage();
+    if (!verifyCsrfTokenGet()) { $error = "❌ Invalid security token."; }
+    else {
+        $id = (int)$_GET['delete'];
+        try {
+            $stmt = $pdo->prepare("DELETE FROM content WHERE id = ?");
+            $stmt->execute([$id]);
+            $msg = "✅ Content ID $id deleted successfully.";
+        } catch(PDOException $e) {
+            $error = "❌ Cannot delete: " . $e->getMessage();
+        }
     }
 }
 
 // --- ADD ---
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_content'])) {
-    $stmt = $pdo->prepare("INSERT INTO content (type, title, description, body_html, difficulty, points, module_group) VALUES (?,?,?,?,?,?,?)");
-    $stmt->execute([
-        $_POST['type'],
-        $_POST['title'],
-        $_POST['desc'],
-        $_POST['body'],
-        $_POST['diff'],
-        (int)$_POST['points'],
-        $_POST['module_group'] ?: null
-    ]);
-    $msg = "✅ Content added successfully!";
+    if (!verifyCsrfToken()) { $error = "❌ Invalid security token."; }
+    else {
+        $stmt = $pdo->prepare("INSERT INTO content (type, title, description, body_html, difficulty, points, module_group) VALUES (?,?,?,?,?,?,?)");
+        $stmt->execute([
+            $_POST['type'],
+            $_POST['title'],
+            $_POST['desc'],
+            $_POST['body'],
+            $_POST['diff'],
+            (int)$_POST['points'],
+            $_POST['module_group'] ?: null
+        ]);
+        $msg = "✅ Content added successfully!";
+    }
 }
 
 // --- EDIT (Fetch data for form) ---
@@ -46,24 +52,50 @@ if (isset($_GET['edit'])) {
 
 // --- EDIT (Update) ---
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_content'])) {
-    $id = (int)$_POST['edit_id'];
-    $stmt = $pdo->prepare("UPDATE content SET type=?, title=?, description=?, body_html=?, difficulty=?, points=?, module_group=? WHERE id=?");
-    $stmt->execute([
-        $_POST['type'],
-        $_POST['title'],
-        $_POST['desc'],
-        $_POST['body'],
-        $_POST['diff'],
-        (int)$_POST['points'],
-        $_POST['module_group'] ?: null,
-        $id
-    ]);
-    $msg = "✅ Content ID $id updated successfully!";
-    $editItem = null; // Clear edit mode
+    if (!verifyCsrfToken()) { $error = "❌ Invalid security token."; }
+    else {
+        $id = (int)$_POST['edit_id'];
+        $stmt = $pdo->prepare("UPDATE content SET type=?, title=?, description=?, body_html=?, difficulty=?, points=?, module_group=? WHERE id=?");
+        $stmt->execute([
+            $_POST['type'],
+            $_POST['title'],
+            $_POST['desc'],
+            $_POST['body'],
+            $_POST['diff'],
+            (int)$_POST['points'],
+            $_POST['module_group'] ?: null,
+            $id
+        ]);
+        $msg = "✅ Content ID $id updated successfully!";
+        $editItem = null; // Clear edit mode
+    }
+}
+
+// --- WRITEUP MODERATION ---
+if (isset($_GET['w_action'])) {
+    if (!verifyCsrfTokenGet()) { $error = "❌ Invalid security token."; }
+    else {
+        $wid = (int)$_GET['wid'];
+        $action = $_GET['w_action']; // approve | reject | delete
+        if ($action == 'approve') {
+            $pdo->prepare("UPDATE writeups SET status='approved' WHERE id=?")->execute([$wid]);
+            $msg = "✅ Writeup #$wid approved.";
+        } elseif ($action == 'reject') {
+            $pdo->prepare("UPDATE writeups SET status='rejected' WHERE id=?")->execute([$wid]);
+            $msg = "❌ Writeup #$wid rejected.";
+        } elseif ($action == 'delete') {
+            $pdo->prepare("DELETE FROM writeups WHERE id=?")->execute([$wid]);
+            $msg = "🗑️ Writeup #$wid deleted.";
+        }
+    }
 }
 
 // --- List all content ---
 $allContent = $pdo->query("SELECT * FROM content ORDER BY id DESC")->fetchAll();
+
+// --- Pending + all writeups ---
+$pendingWriteups = $pdo->query("SELECT w.*, u.username FROM writeups w JOIN users u ON w.user_id = u.id WHERE w.status='pending' ORDER BY w.created_at ASC")->fetchAll();
+$allWriteups = $pdo->query("SELECT w.*, u.username FROM writeups w JOIN users u ON w.user_id = u.id ORDER BY w.created_at DESC LIMIT 50")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html>
@@ -115,8 +147,9 @@ $allContent = $pdo->query("SELECT * FROM content ORDER BY id DESC")->fetchAll();
     }
     ?>
 
-    <h2><?= $form_title ?></h2>
+<h2><?= $form_title ?></h2>
     <form method="POST" class="form-grid">
+        <?= csrfField() ?>
         <?php if ($editItem): ?>
             <input type="hidden" name="edit_id" value="<?= $edit_id ?>">
         <?php endif; ?>
@@ -190,9 +223,9 @@ $allContent = $pdo->query("SELECT * FROM content ORDER BY id DESC")->fetchAll();
                     <td><?= $item['module_group'] ? '<span class="module-tag">'.htmlspecialchars($item['module_group']).'</span>' : '—' ?></td>
                     <td><?= $item['difficulty'] ?></td>
                     <td><?= $item['points'] ?></td>
-                    <td style="text-align:center; white-space:nowrap;" class="actions">
-                        <a href="?edit=<?= $item['id'] ?>" class="edit">✏️ Edit</a>
-                        <a href="?delete=<?= $item['id'] ?>" class="delete" onclick="return confirm('⚠️ Permanently delete this item and its flags?')">🗑️ Delete</a>
+<td style="text-align:center; white-space:nowrap;" class="actions">
+                        <a href="<?= csrfUrl('?edit='.$item['id']) ?>" class="edit">✏️ Edit</a>
+                        <a href="<?= csrfUrl('?delete='.$item['id']) ?>" class="delete" onclick="return confirm('⚠️ Permanently delete this item and its flags?')">🗑️ Delete</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -201,6 +234,65 @@ $allContent = $pdo->query("SELECT * FROM content ORDER BY id DESC")->fetchAll();
             <?php endif; ?>
         </tbody>
     </table>
+
+    <!-- ========== WRITEUP MODERATION ========== -->
+    <h2 style="margin-top:50px;">📝 Writeup Moderation</h2>
+
+    <?php if (count($pendingWriteups) > 0): ?>
+        <h3 style="color:#fe00fe;">⏳ Pending Review (<?= count($pendingWriteups) ?>)</h3>
+        <?php foreach ($pendingWriteups as $w): ?>
+            <div style="background:rgba(0,242,254,0.04); border:1px solid rgba(0,242,254,0.15); border-radius:12px; padding:18px; margin:12px 0;">
+                <strong><?= htmlspecialchars($w['title']) ?></strong>
+                <span style="color:#888; font-size:0.85rem; margin-left:12px;">by <?= htmlspecialchars($w['username']) ?></span>
+                <p style="color:#c8c8f0; font-size:0.9rem; margin-top:8px;"><?= nl2br(htmlspecialchars(mb_substr($w['content'], 0, 300))) ?>...</p>
+<a href="<?= csrfUrl('?w_action=approve&wid='.$w['id']) ?>" style="color:#00e676; margin-right:15px;">✅ Approve</a>
+                <a href="<?= csrfUrl('?w_action=reject&wid='.$w['id']) ?>" style="color:#ffb300; margin-right:15px;">❌ Reject</a>
+                <a href="<?= csrfUrl('?w_action=delete&wid='.$w['id']) ?>" style="color:#ff6b6b;">🗑️ Delete</a>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p style="color:#666;">No writeups pending review. 🎉</p>
+    <?php endif; ?>
+
+    <?php if (count($allWriteups) > 0): ?>
+        <h3 style="margin-top:25px;">📚 All Writeups</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($allWriteups as $w): ?>
+                    <tr>
+                        <td>#<?= $w['id'] ?></td>
+                        <td><strong><?= htmlspecialchars($w['title']) ?></strong></td>
+                        <td><?= htmlspecialchars($w['username']) ?></td>
+                        <td>
+                            <span class="badge-status" style="background:<?= $w['status']=='approved' ? 'rgba(0,230,118,0.15)':'rgba(255,255,255,0.05)' ?>; color:<?= $w['status']=='approved' ? '#00e676':'#888' ?>;">
+                                <?= $w['status'] ?>
+                            </span>
+                        </td>
+                        <td><?= htmlspecialchars($w['created_at']) ?></td>
+<td class="actions">
+                            <?php if ($w['status'] != 'approved'): ?>
+                                <a href="<?= csrfUrl('?w_action=approve&wid='.$w['id']) ?>" class="edit">✅ Approve</a>&nbsp;
+                            <?php endif; ?>
+                            <?php if ($w['status'] != 'rejected'): ?>
+                                <a href="<?= csrfUrl('?w_action=reject&wid='.$w['id']) ?>" class="delete">❌ Reject</a>&nbsp;
+                            <?php endif; ?>
+                            <a href="<?= csrfUrl('?w_action=delete&wid='.$w['id']) ?>" class="delete" onclick="return confirm('Delete this writeup?')">🗑️ Delete</a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 </div>
 </body>
 </html>

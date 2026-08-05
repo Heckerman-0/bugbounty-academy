@@ -10,9 +10,14 @@ $is_logged_in = isLoggedIn();
     </div>
     <div class="nav-links">
         <?php if ($is_logged_in): ?>
-            <a href="<?= BASE_URL ?>dashboard.php" class="<?= ($current_page == 'dashboard.php') ? 'active' : '' ?>">📊 Dashboard</a>
-            <a href="<?= BASE_URL ?>profile.php" class="<?= ($current_page == 'profile.php') ? 'active' : '' ?>">👤 Account</a>
+<a href="<?= BASE_URL ?>dashboard.php" class="<?= ($current_page == 'dashboard.php') ? 'active' : '' ?>">📊 Dashboard</a>
+            <a href="<?= BASE_URL ?>modules/labs/index.php">💻 Labs</a>
             <a href="<?= BASE_URL ?>modules/writeups/index.php">📝 Writeups</a>
+<a href="<?= BASE_URL ?>leaderboard.php" class="<?= ($current_page == 'leaderboard.php') ? 'active' : '' ?>">🏆 Leaderboard</a>
+            <a href="<?= BASE_URL ?>profile.php" class="<?= ($current_page == 'profile.php') ? 'active' : '' ?>">👤 Account</a>
+            <?php if (isAdmin()): ?>
+                <a href="<?= BASE_URL ?>admin/index.php" style="color:#fe00fe;">⚙️ Admin</a>
+            <?php endif; ?>
             <a href="<?= BASE_URL ?>logout.php" style="color:#fe00fe; border-bottom-color:#fe00fe;">🚪 Logout</a>
         <?php else: ?>
             <a href="<?= BASE_URL ?>login.php" class="<?= ($current_page == 'login.php') ? 'active' : '' ?>">🔐 Login</a>

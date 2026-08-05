@@ -1,7 +1,8 @@
 ﻿<?php 
 require_once '../../includes/auth.php';
 if (!isLoggedIn()) redirect('login.php');
-$id = $_GET['id'];
+$id = (int)($_GET['id'] ?? 0);
+if ($id <= 0) die("Lesson not found");
 $stmt = $pdo->prepare("SELECT * FROM content WHERE id=? AND type='lesson'");
 $stmt->execute([$id]);
 $lesson = $stmt->fetch();
