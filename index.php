@@ -5,11 +5,23 @@
     <title>🛡️ Bug Bounty Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        .hero h1 {
+.hero h1 {
             font-size: 4.2rem;
-            background: linear-gradient(135deg, #00f2fe, #fe00fe, #00f2fe);
-            background-size: 200% 200%;
-            animation: gradientMove 4s ease infinite;
+            /* Solid neon fallback so the heading is ALWAYS visible,
+               even if background-clip: text is not supported. */
+            color: #00f2fe;
+            background: none;
+            -webkit-text-fill-color: inherit;
+        }
+        @supports (-webkit-background-clip: text) or (background-clip: text) {
+            .hero h1 {
+                background: linear-gradient(135deg, #00f2fe, #fe00fe, #00f2fe);
+                background-size: 200% 200%;
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+                animation: gradientMove 4s ease infinite;
+            }
         }
         .hero .tagline {
             font-size: 1.25rem;

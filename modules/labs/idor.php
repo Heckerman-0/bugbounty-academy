@@ -40,31 +40,85 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
 }
 ?>
 <!DOCTYPE html>
-<html><head><link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css"></head>
-<body><div class="container">
-<h1>IDOR Lab</h1>
-<p>You are logged in as user #<?= (int)$_SESSION['user_id'] ?>. Try to access another user's profile by changing the <code>user_id</code> parameter.</p>
-<form method="GET">
-    <input type="number" name="user_id" placeholder="user_id" value="<?= (int)$_SESSION['user_id'] ?>">
-    <button type="submit">View Profile</button>
-</form>
-<?php if ($profile): ?>
-<div style="border:1px solid #ccc; padding:10px; margin-top:10px;">
-    <p><strong>Username:</strong> <?= htmlspecialchars($profile['username']) ?></p>
-    <p><strong>Email:</strong> <?= htmlspecialchars($profile['email']) ?></p>
-    <?php if (!empty($profile['sensitive'])): ?>
-        <p><strong>Sensitive:</strong> <code><?= htmlspecialchars($profile['sensitive']) ?></code></p>
-    <?php endif; ?>
+<html>
+<head>
+    <title>PeopleHub | User Profiles</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>includes/lab.css">
+    <style>
+        :root { --accent: #db2777; --accent2: #831843; }
+        .profile-nav { display:flex; gap:8px; flex-wrap:wrap; }
+        .profile-nav input { max-width: 160px; }
+    </style>
+</head>
+<body>
+<div class="lab-banner">
+    <div><span class="brand">🛡️ BBA</span> Lab — IDOR</div>
+    <div><a class="link" href="<?= BASE_URL ?>modules/labs/index.php">⬅ Back to Labs</a></div>
 </div>
-<?php endif; ?>
-<div style="border:1px solid #ccc; padding:10px; margin-top:10px;"><?= $msg ?></div>
 
-<form method="POST">
-    <?= csrfField() ?>
-    <h3>Found the flag? Submit it:</h3>
-    <input type="text" name="flag" placeholder="Enter flag">
-    <button type="submit">Submit Flag</button>
-</form>
-<?php if ($flag_correct): ?><h2 style="color:green;">✅ Lab Passed!</h2><?php endif; ?>
-<a href="<?= BASE_URL ?>modules/labs/index.php">Back to Labs</a>
-</div></body></html>
+<header class="site-header">
+    <div class="inner">
+        <div class="logo">👥 PeopleHub <span>Profiles</span></div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Explore</a>
+            <a href="#">Messages</a>
+        </nav>
+    </div>
+</header>
+
+<main class="site-main">
+    <div class="site-card">
+        <h1>View Profile</h1>
+        <p class="sub">You are logged in as user #<?= (int)$_SESSION['user_id'] ?>. Look up any member by their ID.</p>
+
+        <form method="GET" class="site-form profile-nav">
+            <input type="number" name="user_id" placeholder="User ID" value="<?= (int)$_SESSION['user_id'] ?>">
+            <button type="submit" class="btn-site">View Profile</button>
+        </form>
+
+        <?php if ($profile): ?>
+            <div class="profile-card">
+                <div class="avatar"><?= strtoupper(substr(htmlspecialchars($profile['username']), 0, 1)) ?></div>
+                <div class="info">
+                    <h3 style="margin:0 0 4px;"><?= htmlspecialchars($profile['username']) ?></h3>
+                    <p><strong>Email:</strong> <?= htmlspecialchars($profile['email'] ?? 'private') ?></p>
+                    <?php if (!empty($profile['sensitive'])): ?>
+                        <p><strong>Sensitive:</strong> <code><?= htmlspecialchars($profile['sensitive']) ?></code></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($msg): ?>
+            <div class="alert <?= (stripos($msg,'Exploit')!==false) ? 'ok' : 'info' ?>"><?= $msg ?></div>
+        <?php endif; ?>
+    </div>
+
+    <div class="flag-box">
+        <h3>🏴 Found the flag? Submit it:</h3>
+        <form method="POST" class="site-form">
+            <?= csrfField() ?>
+            <input type="text" name="flag" placeholder="Enter flag">
+            <button type="submit" class="btn-site">Submit Flag</button>
+        </form>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+    </div>
+</main>
+
+<?php
+$stuckSteps = [
+    'This is a user profile lookup tool. It lets you view any user\'s profile by their ID number.',
+    'The app does NOT check whether you are allowed to view the profile you request.',
+    'That is the bug: Insecure Direct Object Reference (IDOR).',
+    'You are logged in as a normal user, but the app trusts whatever user_id you provide.',
+    'Try changing the user_id to 1 — the administrator account.',
+    'Enter user_id = 1 and view the profile.',
+    'The admin profile leaks a sensitive value, which is the flag.',
+    'Submit that flag below to complete the lab.',
+];
+$stuckTip = 'The admin account is user_id 1. Access it to see the leaked admin hash (the flag).';
+include '../../includes/stuck_widget.php';
+?>
+</body>
+</html>

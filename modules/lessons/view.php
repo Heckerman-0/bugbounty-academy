@@ -13,6 +13,7 @@ markComplete($_SESSION['user_id'], $id);
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title><?= htmlspecialchars($lesson['title']) ?> | Bug Bounty Academy</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <style>

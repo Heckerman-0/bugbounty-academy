@@ -35,25 +35,80 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['flag'])) {
 }
 ?>
 <!DOCTYPE html>
-<html><head><link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css"></head>
-<body><div class="container">
-<h1>SSRF Lab</h1>
-<p>This tool fetches a URL on the server side. Try accessing an internal resource like <code>http://127.0.0.1:8080/admin</code> to read the flag.</p>
-<form method="GET">
-    <input type="text" name="url" placeholder="http://example.com" value="http://example.com">
-    <button type="submit">Fetch</button>
-</form>
-<?php if ($result): ?>
-<div style="border:1px solid #ccc; padding:10px;"><pre><?= htmlspecialchars(mb_substr($result, 0, 2000)) ?></pre></div>
-<?php endif; ?>
-<div style="border:1px solid #ccc; padding:10px; margin-top:10px;"><?= $msg ?></div>
+<html>
+<head>
+    <title>FetchIO | URL Inspector</title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>includes/lab.css">
+    <style>
+        :root { --accent: #0d9488; --accent2: #134e4a; }
+        .endpoint { background:#f0fdfa; border:1px solid #99f6e4; border-radius:10px; padding:12px 16px; font-family:'Consolas',monospace; font-size:0.85rem; color:#134e4a; margin:10px 0; }
+    </style>
+</head>
+<body>
+<div class="lab-banner">
+    <div><span class="brand">🛡️ BBA</span> Lab — SSRF</div>
+    <div><a class="link" href="<?= BASE_URL ?>modules/labs/index.php">⬅ Back to Labs</a></div>
+</div>
 
-<form method="POST">
-    <?= csrfField() ?>
-    <h3>Found the flag? Submit it:</h3>
-    <input type="text" name="flag" placeholder="Enter flag">
-    <button type="submit">Submit Flag</button>
-</form>
-<?php if ($flag_correct): ?><h2 style="color:green;">✅ Lab Passed!</h2><?php endif; ?>
-<a href="<?= BASE_URL ?>modules/labs/index.php">Back to Labs</a>
-</div></body></html>
+<header class="site-header">
+    <div class="inner">
+        <div class="logo">🌐 FetchIO <span>URL Inspector API</span></div>
+        <nav>
+            <a href="#">Docs</a>
+            <a href="#">Console</a>
+            <a href="#">Status</a>
+        </nav>
+    </div>
+</header>
+
+<main class="site-main">
+    <div class="site-card">
+        <h1>Fetch a URL</h1>
+        <p class="sub">Enter a URL and our service will fetch its contents server-side.</p>
+
+        <form method="GET" class="site-form">
+            <label for="url">Target URL</label>
+            <input type="text" name="url" id="url" placeholder="http://example.com" value="http://example.com">
+            <button type="submit" class="btn-site">🔍 Fetch URL</button>
+        </form>
+
+        <div class="endpoint">GET <?= htmlspecialchars($_GET['url'] ?? 'http://example.com') ?></div>
+
+        <?php if ($result): ?>
+            <div class="terminal">
+                <div class="term-head">Response body (first 2000 chars)</div>
+                <?= htmlspecialchars(mb_substr($result, 0, 2000)) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($msg): ?>
+            <div class="alert ok"><?= $msg ?></div>
+        <?php endif; ?>
+    </div>
+
+    <div class="flag-box">
+        <h3>🏴 Found the flag? Submit it:</h3>
+        <form method="POST" class="site-form">
+            <?= csrfField() ?>
+            <input type="text" name="flag" placeholder="Enter flag">
+            <button type="submit" class="btn-site">Submit Flag</button>
+        </form>
+<?php if ($flag_correct): ?><div class="flag-done">✅ Lab Passed!</div><?php endif; ?>
+    </div>
+</main>
+
+<?php
+$stuckSteps = [
+    'This API lets you fetch any URL, and the request is made by the server itself.',
+    'That is the core of SSRF (Server-Side Request Forgery) — the server fetches the URL for you.',
+    'The lab has an internal admin page that is only reachable from inside the server.',
+    'Try fetching a local/internal address instead of a public website.',
+    'Enter   http://127.0.0.1:8080/admin   in the URL field.',
+    'The server fetches that internal page and returns its contents to you.',
+    'The internal page contains the flag — submit it below to complete the lab.',
+];
+$stuckTip = 'The internal admin page lives at http://127.0.0.1:8080/admin — only reachable from the server itself.';
+include '../../includes/stuck_widget.php';
+?>
+</body>
+</html>
